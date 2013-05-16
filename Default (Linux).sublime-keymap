@@ -1,0 +1,4 @@
+[ 
+  // open filename under cursor
+  { "keys": ["ctrl+shift+b"], "command": "open_filename_under_cursor"}
+]
