@@ -6,7 +6,7 @@ VALID_FILENAME_CHARS = "-_.() %s%s%s" % (string.ascii_letters, string.digits, "/
 
 
 # https://gist.github.com/1186126
-class OpenFilenameUnderCursor(sublime_plugin.TextCommand):
+class OpenRailsPartial(sublime_plugin.TextCommand):
     def run(self, edit):
         for region in self.view.sel():
             # Collect the texts that may possibly be filenames
