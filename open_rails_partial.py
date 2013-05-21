@@ -14,6 +14,8 @@ class OpenRailsPartial(sublime_plugin.TextCommand):
             file_extension = ''
             if re.match("text.html.ruby*", syntax):
                 file_extension = '.html.erb'
+            elif re.match("text.haml*", syntax):
+                file_extension = '.html.haml'
             quoted_text = self.get_quoted_selection(region)
             selected_text = self.get_selection(region)
             # whole_line = self.get_line(region)
