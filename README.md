@@ -1,4 +1,12 @@
-Open Rails Partial
-=======================
+# Sublime Text: Open Rails Partial
 
-Turned jbjornson's [gist](https://gist.github.com/jbjornson/1186126) into a plugin and modifed for Rail's partials (shared and same directory).
+### Description
+A plugin that enables you to open a Ruby on Rails partial by selecting it's name.
+
+
+### Credits
+**Original author**: [Ojbjornson](https://github.com/jbjornson)
+
+
+### Recommended Plugin
+[Rails Partial](https://github.com/wesf90/rails-partial) - Create a new partial by selecting the partial's content
