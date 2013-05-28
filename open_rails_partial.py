@@ -18,6 +18,7 @@ class OpenRailsPartial(sublime_plugin.TextCommand):
                 file_extension = '.html.haml'
             quoted_text = self.get_quoted_selection(region)
             selected_text = self.get_selection(region)
+            instance_text = self.get_instance(region)  # ie @user
             # whole_line = self.get_line(region)
             # clipboard = sublime.get_clipboard().strip()
             default_new_filename = self.create_filename(quoted_text, file_extension)
@@ -31,6 +32,14 @@ class OpenRailsPartial(sublime_plugin.TextCommand):
                 if os.path.isfile(potential_filename):
                     filename = potential_filename
                     break
+            if instance_text:
+                if instance_text.endswith('s'):
+                    potential_filename = self.get_filename(instance_text + '/' + instance_text[:-1], file_extension)
+                else:
+                    potential_filename = self.get_filename(instance_text + 's/' + instance_text, file_extension)
+                # print potential_filename
+                if os.path.isfile(potential_filename):
+                    filename = potential_filename
 
             # If a filename was discovered from one of the sources, then open it
             if filename:
@@ -41,6 +50,10 @@ class OpenRailsPartial(sublime_plugin.TextCommand):
 
     def get_selection(self, region):
         return self.view.substr(region).strip()
+
+    def get_instance(self, region):
+        selection = self.view.substr(region).strip()
+        return selection[1:] if selection.startswith('@') else ''
 
     def get_line(self, region):
         return self.view.substr(self.view.line(region)).strip()
