@@ -2,6 +2,9 @@ import sublime, sublime_plugin
 import os.path, string
 import re
 
+# TODO: add a selection for string surrounded by cursor
+# TODO: add compatibility for user.things, @user.things
+
 VALID_FILENAME_CHARS = "-_.() %s%s%s" % (string.ascii_letters, string.digits, "/:\\")
 
 
@@ -18,7 +21,9 @@ class OpenRailsPartial(sublime_plugin.TextCommand):
                 file_extension = '.html.haml'
             quoted_text = self.get_quoted_selection(region)
             selected_text = self.get_selection(region)
-            instance_text = self.get_instance(region)  # ie @user
+            current_string = self.get_current_string(region)
+            instance_text = self.get_instance(current_string)
+            print current_string
             # whole_line = self.get_line(region)
             # clipboard = sublime.get_clipboard().strip()
             default_new_filename = self.create_filename(quoted_text, file_extension)
@@ -51,9 +56,12 @@ class OpenRailsPartial(sublime_plugin.TextCommand):
     def get_selection(self, region):
         return self.view.substr(region).strip()
 
-    def get_instance(self, region):
-        selection = self.view.substr(region).strip()
-        return selection[1:] if selection.startswith('@') else ''
+    def get_instance(self, text):
+        # selection = self.view.substr(region).strip()
+        return text[1:] if text.startswith('@') | text.startswith('.') else ''
+
+    def get_current_string(self, region):
+        return self.view.substr(self.view.extract_scope(region.begin()))
 
     def get_line(self, region):
         return self.view.substr(self.view.line(region)).strip()
@@ -105,11 +113,14 @@ class OpenRailsPartial(sublime_plugin.TextCommand):
         file_array = stripped.split('/')
         count = len(file_array)
         # normal = current_dir + '/' + stripped
-        if count == 1:
-            partial = current_dir + '/' + '_' + stripped + extension
+        if text:
+            if count == 1:
+                partial = current_dir + '/' + '_' + stripped + extension
+            else:
+                new_filename = '_' + file_array[(count - 1)] + extension
+                file_array.pop()
+                file_array.append(new_filename)
+                partial = parent_dir + '/' + ('/').join(file_array)
+            return ''.join(c for c in partial if c in VALID_FILENAME_CHARS)
         else:
-            new_filename = '_' + file_array[(count - 1)] + extension
-            file_array.pop()
-            file_array.append(new_filename)
-            partial = parent_dir + '/' + ('/').join(file_array)
-        return ''.join(c for c in partial if c in VALID_FILENAME_CHARS)
+            return ''
