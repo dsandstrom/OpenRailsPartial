@@ -23,10 +23,14 @@ class OpenRailsPartial(sublime_plugin.TextCommand):
             selected_text = self.get_selection(region)
             current_string = self.get_current_string(region)
             instance_text = self.get_instance(current_string)
-            print current_string
+            # print current_string
             # whole_line = self.get_line(region)
             # clipboard = sublime.get_clipboard().strip()
-            default_new_filename = self.create_filename(quoted_text, file_extension)
+            if quoted_text:
+                default_new_filename = self.create_filename(quoted_text, file_extension)
+            else:
+                default_new_filename = self.create_filename(current_string, file_extension)
+            # print 'default_new_filename: ' + default_new_filename
 
             # Search for a valid filename from the possible sources: quoted_text, selected_text, whole_line, clipboard
             # If none of these sources match a valid filename the a new filename will be created from the selected_text
@@ -51,7 +55,7 @@ class OpenRailsPartial(sublime_plugin.TextCommand):
                 print "Opening file '%s'" % (filename)
                 self.view.window().open_file(filename)
             else:
-                print "No filename discovered in the quoted_text, selected_text, whole_line or clipboard"
+                print "No filename discovered in the quoted_text, selected_text, or current_string"
 
     def get_selection(self, region):
         return self.view.substr(region).strip()
@@ -83,44 +87,46 @@ class OpenRailsPartial(sublime_plugin.TextCommand):
         close_quote = text.rfind(quote_character, 1, position)
         return text[1:close_quote] if (close_quote > 0) else ''
 
-    def get_filename(self, text, extension):
+    def get_partial_name(self, text, extension):
         current_dir = os.path.dirname(self.view.file_name())
         parent_dir = os.path.dirname(current_dir)
-        stripped = text.strip()
-        file_array = stripped.split('/')
+        file_array = text.split('/')
         count = len(file_array)
-        normal = current_dir + '/' + stripped
         if count == 1:
-            partial = current_dir + '/' + '_' + stripped + extension
+            partial = current_dir + '/' + '_' + text + extension
         else:
             new_filename = '_' + file_array[(count - 1)] + extension
             file_array.pop()
             file_array.append(new_filename)
             partial = parent_dir + '/' + ('/').join(file_array)
+        return partial
+
+    def get_filename(self, text, extension):
+        current_dir = os.path.dirname(self.view.file_name())
+        # parent_dir = os.path.dirname(current_dir)
+        stripped = text.strip()
+        # file_array = stripped.split('/')
+        # count = len(file_array)
+        normal = current_dir + '/' + stripped
+        partial = self.get_partial_name(stripped, extension)
         if os.path.isfile(normal):
             return text
         elif os.path.isfile(partial):
-            print 'partial is found'
+            # print 'partial is found'
             return partial
         else:
             return ''
 
     def create_filename(self, text, extension):
         # return ''.join(c for c in text if c in VALID_FILENAME_CHARS)
-        current_dir = os.path.dirname(self.view.file_name())
-        parent_dir = os.path.dirname(current_dir)
+        # current_dir = os.path.dirname(self.view.file_name())
+        # parent_dir = os.path.dirname(current_dir)
         stripped = text.strip()
-        file_array = stripped.split('/')
-        count = len(file_array)
+        # file_array = stripped.split('/')
+        # count = len(file_array)
+        partial = self.get_partial_name(stripped, extension)
         # normal = current_dir + '/' + stripped
         if text:
-            if count == 1:
-                partial = current_dir + '/' + '_' + stripped + extension
-            else:
-                new_filename = '_' + file_array[(count - 1)] + extension
-                file_array.pop()
-                file_array.append(new_filename)
-                partial = parent_dir + '/' + ('/').join(file_array)
             return ''.join(c for c in partial if c in VALID_FILENAME_CHARS)
         else:
             return ''
