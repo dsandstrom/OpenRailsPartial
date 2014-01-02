@@ -21,17 +21,17 @@ class OpenRailsPartial(sublime_plugin.TextCommand):
                 extension = '.html.haml'
             else:
                 extension = ''
-            print "extension: " + extension
+            print("extension: " + extension)
 
             # get the partial string or instance variable
             quoted_text = self.get_quoted_selection(region)
-            print "quoted_text: " + quoted_text
+            print("quoted_text: " + quoted_text)
             selected_text = self.get_selection(region)
-            print "selected_text: " + selected_text
+            print("selected_text: " + selected_text)
             current_string = self.get_current_string(region)
-            print "current_string: " + current_string
+            print("current_string: " + current_string)
             instance_text = self.remove_instance_identifier(current_string) if current_string else ''
-            print "instance_text: " + instance_text
+            print("instance_text: " + instance_text)
             # whole_line = self.get_line(region)
             # clipboard = sublime.get_clipboard().strip()
 
@@ -44,7 +44,7 @@ class OpenRailsPartial(sublime_plugin.TextCommand):
                 new_filename = self.create_path_from_instance(instance_text, extension)
             else:
                 new_filename = ''
-            print 'new_filename: ' + new_filename
+            print('new_filename: ' + new_filename)
 
             # Search for a valid filename from the possible sources: quoted_text, selected_text, whole_line, clipboard
             # If none of these sources match a valid filename the a new filename will be created from the selected_text
@@ -62,7 +62,7 @@ class OpenRailsPartial(sublime_plugin.TextCommand):
                     found_filename = potential_filename
             elif instance_text:
                 potential_filename = self.instance_to_path(instance_text, extension)
-                # print potential_filename
+                # print(potential_filename)
                 if os.path.isfile(potential_filename):
                     found_filename = potential_filename
 
@@ -70,10 +70,10 @@ class OpenRailsPartial(sublime_plugin.TextCommand):
 
             # If a filename was discovered from one of the sources, then open it
             if filename:
-                print "Opening file '%s'" % (filename)
+                print("Opening file '%s'" % (filename))
                 self.view.window().open_file(filename)
             else:
-                print "No filename discovered in the quoted_text, selected_text, or current_string"
+                print("No filename discovered in the quoted_text, selected_text, or current_string")
 
     def get_selection(self, region):
         return self.view.substr(region).strip()
@@ -91,10 +91,10 @@ class OpenRailsPartial(sublime_plugin.TextCommand):
         quoted_text = ''
         if re.match(".*string.quoted.double*", syntax):
             quoted_text = self.expand_within_quotes(text, position, '"')
-            # print quoted_text
+            # print(quoted_text)
         elif re.match(".*string.quoted.single*", syntax):
             quoted_text = self.expand_within_quotes(text, position, '\'')
-            # print quoted_text
+            # print(quoted_text)
         return quoted_text
 
     def expand_within_quotes(self, text, position, quote_character):
@@ -122,7 +122,7 @@ class OpenRailsPartial(sublime_plugin.TextCommand):
         count = len(file_array)
         if count == 1:
             partial = current_dir + '/' + '_' + text + extension
-            # print partial
+            # print(partial)
         else:
             new_filename = '_' + file_array[(count - 1)] + extension
             file_array.pop()
@@ -141,7 +141,7 @@ class OpenRailsPartial(sublime_plugin.TextCommand):
     #     if os.path.isfile(normal):
     #         return text
     #     elif os.path.isfile(partial):
-    #         # print 'partial is found'
+    #         # print('partial is found')
     #         return partial
     #     else:
     #         return ''
